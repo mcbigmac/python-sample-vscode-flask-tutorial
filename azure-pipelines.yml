@@ -35,9 +35,6 @@ steps:
     pytest
   displayName: 'pytest'
 
-- script: |
-    print("kokot")
-
 - task: PythonScript@0
   inputs:
     scriptSource: inline
