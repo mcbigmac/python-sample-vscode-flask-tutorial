@@ -25,27 +25,30 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-  displayName: 'Install dependencies'
 
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
-
-- task: PythonScript@0
+- task: UsePythonVersion@0
   inputs:
-    scriptSource: inline
-    script: |
-      import sys
-      print ('Executing script file is:', str(sys.argv[0]))
-      print ('The arguments are:', str(sys.argv))
-      import argparse
-      parser = argparse.ArgumentParser()
-      parser.add_argument("--world", help="Provide the name of the world to greet.")
-      args = parser.parse_args()
-      print ('Hello ', args.world)
-    arguments: --world Venus
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
 
+- script: |
+    python -m venv antenv
+    source antenv/bin/activate
+    python -m pip install --upgrade pip
+    pip install setup
+    pip install --target="./.python_packages/lib/site-packages" -r ./requirements.txt
+  workingDirectory: $(projectRoot)
+  displayName: "Install requirements"
+
+- task: ArchiveFiles@2
+  inputs:
+     rootFolderOrFile: '$(Build.SourcesDirectory)'
+     includeRootFolder: false
+     archiveType: 'zip'
+     archiveFile: '$(Build.ArtifactStagingDirectory)/Application$(Build.BuildId).zip'
+     replaceExistingArchive: true
+     verbose: # (no value); this input is optional
+
+- publish: $(Build.ArtifactStagingDirectory)/Application$(Build.BuildId).zip
+  displayName: 'Upload package'
+  artifact: drop
