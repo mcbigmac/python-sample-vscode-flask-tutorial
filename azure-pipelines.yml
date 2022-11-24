@@ -82,6 +82,11 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : python-pipeline-test'
             inputs:
-              azureSubscription: $(azureServiceConnectionId)
-              appName: $(webAppName)
+              # azureSubscription: $(azureServiceConnectionId)
+              # appName: $(webAppName)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
+              azureSubscription: 'Azure subscription 1 (1b36c9a9-736f-499b-965b-024496490ee0)'
+              appType: 'webAppLinux'
+              appName: 'sptfsrch-pipeline2'
+              # package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+              runtimeStack: 'PYTHON|3.9'
